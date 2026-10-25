@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Maya Bangun Ruang - SD Negeri 3 Getakan</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Fredoka & Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandYellow: '#FACC15',
+                        brandOrange: '#FB923C',
+                        brandBlue: '#38BDF8',
+                        brandGreen: '#4ADE80',
+                        brandPurple: '#C084FC',
+                        bgDark: '#0F172A',
+                        cardDark: '#1E293B'
+                    },
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'cursive'],
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Fredoka', cursive, sans-serif;
+            background-color: #070A13;
+            color: #F8FAFC;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* Container 16:9 Aspect Ratio Strict Bounds */
+        .app-container {
+            width: 100vw;
+            height: 100vh;
+            max-width: 177.78vh;
+            max-height: 56.25vw;
+            margin: auto;
+            position: absolute;
+            top: 0; bottom: 0; left: 0; right: 0;
+            display: flex;
+            flex-direction: column;
+            background-color: #0F172A;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+            overflow: hidden;
+        }
+
+        .custom-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #1E293B;
+            border-radius: 8px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #38BDF8;
+            border-radius: 8px;
+        }
+
+        /* Glassmorphism elements */
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Print styles */
+        @media print {
+            body { overflow: visible; background: white; color: black; font-family: sans-serif; }
+            .app-container { position: relative; width: 100%; height: auto; max-width: none; max-height: none; box-shadow: none; background: white; }
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            .tab-content { display: block !important; position: relative !original; }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+
+    <!-- APP MAIN CONTAINER (16:9 RATIO) -->
+    <div class="app-container rounded-2xl border-2 border-slate-800">
+
+        <!-- SPLASH SCREEN INTERAKTIF -->
+        <div id="splash-screen" class="absolute inset-0 z-50 bg-slate-950 flex flex-col items-center justify-center p-6 text-center">
+            <div class="max-w-xl w-full flex flex-col items-center">
+                <!-- Mascot / Badge Icon -->
+                <div class="w-24 h-24 bg-gradient-to-tr from-brandYellow via-brandOrange to-brandPurple rounded-3xl flex items-center justify-center mb-4 shadow-xl shadow-amber-500/20 animate-bounce">
+                    <i class="fa-solid fa-shapes text-5xl text-slate-950"></i>
+                </div>
+                
+                <h1 class="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-brandYellow via-brandOrange to-brandBlue mb-1">
+                    LAB MAYA BANGUN RUANG
+                </h1>
+                <p class="text-brandBlue text-base font-semibold mb-1">Tabung & Prisma (Fase B - Kelas 4 SD)</p>
+                <span class="text-xs text-slate-400 bg-slate-800 px-3 py-1 rounded-full border border-slate-700 mb-6">
+                    <i class="fa-solid fa-school text-brandYellow mr-1"></i> SD Negeri 3 Getakan
+                </span>
+
+                <!-- Loading Bar Progress -->
+                <div class="w-full bg-slate-800 h-4 rounded-full overflow-hidden mb-3 p-0.5 border border-slate-700">
+                    <div id="loading-bar" class="bg-gradient-to-r from-brandYellow via-brandOrange to-brandGreen h-full w-0 rounded-full transition-all duration-300"></div>
+                </div>
+                <p id="loading-text" class="text-xs text-slate-400 font-mono mb-6">Menyiapkan Ruang Belajar (0%)...</p>
+
+                <!-- Mulai Belajar Button -->
+                <button id="btn-start" onclick="startApp()" disabled class="px-8 py-3.5 bg-gradient-to-r from-brandYellow to-brandOrange hover:from-amber-400 hover:to-orange-400 text-slate-950 font-extrabold rounded-2xl shadow-lg shadow-amber-500/30 transition-all duration-300 opacity-50 cursor-not-allowed flex items-center gap-3 text-lg tracking-wide">
+                    <span>MULAI BELAJAR</span>
+                    <i class="fa-solid fa-rocket"></i>
+                </button>
+
+                <!-- Developer Footer Note -->
+                <div class="mt-8 text-xs text-slate-400 flex items-center gap-2">
+                    <span>Pengembang:</span>
+                    <span class="text-brandYellow font-bold">I KOMANG AGUS SETHIAWAN</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- HEADER / NAVIGASI UTAMA -->
+        <header class="h-16 bg-slate-900 border-b border-slate-800 px-4 flex items-center justify-between shrink-0 no-print">
+            <!-- Title Brand -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-brandYellow/20 border border-brandYellow/40 flex items-center justify-center text-brandYellow">
+                    <i class="fa-solid fa-cube text-xl"></i>
+                </div>
+                <div>
+                    <h2 class="text-base font-extrabold text-white leading-tight">LAB MAYA BANGUN RUANG</h2>
+                    <span class="text-[11px] text-brandBlue">SD Negeri 3 Getakan • Fase B Kelas 4</span>
+                </div>
+            </div>
+
+            <!-- Tab Buttons (5 Menu Utama) -->
+            <nav class="flex items-center bg-slate-950/80 p-1.5 rounded-2xl border border-slate-800 gap-1 text-xs">
+                <button onclick="switchTab('teori')" id="tab-btn-teori" class="tab-btn active px-3.5 py-2 rounded-xl font-bold transition flex items-center gap-2 text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-book text-sm"></i><span class="hidden md:inline">Teori</span>
+                </button>
+                <button onclick="switchTab('prosedur')" id="tab-btn-prosedur" class="tab-btn px-3.5 py-2 rounded-xl font-bold transition flex items-center gap-2 text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-list-check text-sm"></i><span class="hidden md:inline">Prosedur</span>
+                </button>
+                <button onclick="switchTab('simulasi')" id="tab-btn-simulasi" class="tab-btn px-3.5 py-2 rounded-xl font-bold transition flex items-center gap-2 text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-vr-cardboard text-sm"></i><span class="hidden md:inline">Simulasi 3D</span>
+                </button>
+                <button onclick="switchTab('lkpd')" id="tab-btn-lkpd" class="tab-btn px-3.5 py-2 rounded-xl font-bold transition flex items-center gap-2 text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-file-pen text-sm"></i><span class="hidden md:inline">LKPD</span>
+                </button>
+                <button onclick="switchTab('pengembang')" id="tab-btn-pengembang" class="tab-btn px-3.5 py-2 rounded-xl font-bold transition flex items-center gap-2 text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-user-astronaut text-sm"></i><span class="hidden md:inline">Pengembang</span>
+                </button>
+            </nav>
+
+            <!-- Quick Controls -->
+            <div class="flex items-center gap-2">
+                <button onclick="toggleAudio()" id="btn-audio" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-brandYellow flex items-center justify-center transition border border-slate-700" title="Suara ON/OFF">
+                    <i class="fa-solid fa-volume-high text-sm" id="audio-icon"></i>
+                </button>
+                <button onclick="resetAll()" class="w-9 h-9 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 border border-rose-500/30 flex items-center justify-center transition" title="Reset Simulasi">
+                    <i class="fa-solid fa-rotate-left text-sm"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- MAIN KONTEN CONTAINER -->
+        <main class="flex-1 relative overflow-hidden bg-slate-900/60">
+
+            <!-- TAB 1: TEORI (Materi Kelas 4 SD) -->
+            <div id="tab-teori" class="tab-content absolute inset-0 p-4 md:p-6 overflow-y-auto custom-scroll hidden">
+                <div class="max-w-4xl mx-auto space-y-6">
+                    <!-- Banner Pengenalan -->
+                    <div class="bg-gradient-to-r from-indigo-900/60 via-purple-900/40 to-slate-800 p-5 rounded-2xl border border-indigo-500/30 flex flex-col md:flex-row items-center gap-4">
+                        <div class="w-16 h-16 bg-brandYellow/20 rounded-2xl flex items-center justify-center text-brandYellow text-3xl shrink-0 border border-brandYellow/30">
+                            <i class="fa-solid fa-lightbulb"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-white mb-1">Apa itu Bangun Ruang?</h3>
+                            <p class="text-xs md:text-sm text-slate-300 font-sans leading-relaxed">
+                                Bangun ruang adalah benda 3 dimensi yang memiliki **isi/volume** dan dibatasi oleh sisi-sisi. Di kelas 4 ini, kita akan mempelajari **Tabung**, **Prisma Segitiga**, dan **Prisma Segiempat (Balok)**!
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Cards Bangun Ruang -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- Tabung -->
+                        <div class="bg-slate-800/80 p-5 rounded-2xl border border-brandYellow/30 relative overflow-hidden flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center gap-2 mb-3">
+                                    <span class="w-3 h-3 rounded-full bg-brandYellow"></span>
+                                    <h4 class="text-base font-extrabold text-brandYellow">1. Tabung</h4>
+                                </div>
+                                <p class="text-xs text-slate-300 font-sans mb-3">Memiliki alas & tutup berbentuk lingkaran yang sama besar serta 1 sisi lengkung (selimut).</p>
+                                <ul class="text-xs text-slate-400 font-sans space-y-1 bg-slate-900/80 p-3 rounded-xl border border-slate-700">
+                                    <li>🔹 <strong>Sisi:</strong> 3 (Alas, Tutup, Selimut)</li>
+                                    <li>🔹 <strong>Rusuk:</strong> 2 (Rusuk lengkung)</li>
+                                    <li>🔹 <strong>Titik Sudut:</strong> 0 (Tidak ada)</li>
+                                </ul>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-slate-700/60 text-[11px] text-brandBlue font-sans">
+                                💡 <strong>Contoh:</strong> Kaleng susu, drum air, pipa, gelas.
+                            </div>
+                        </div>
+
+                        <!-- Prisma Segitiga -->
+                        <div class="bg-slate-800/80 p-5 rounded-2xl border border-brandGreen/30 relative overflow-hidden flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center gap-2 mb-3">
+                                    <span class="w-3 h-3 rounded-full bg-brandGreen"></span>
+                                    <h4 class="text-base font-extrabold text-brandGreen">2. Prisma Segitiga</h4>
+                                </div>
+                                <p class="text-xs text-slate-300 font-sans mb-3">Memiliki alas & tutup berbentuk segitiga yang sama besar serta sisi tegak berbentuk persegi/persegi panjang.</p>
+                                <ul class="text-xs text-slate-400 font-sans space-y-1 bg-slate-900/80 p-3 rounded-xl border border-slate-700">
+                                    <li>🔹 <strong>Sisi:</strong> 5 (Alas, Tutup, 3 Sisi Tegak)</li>
+                                    <li>🔹 <strong>Rusuk:</strong> 9</li>
+                                    <li>🔹 <strong>Titik Sudut:</strong> 6</li>
+                                </ul>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-slate-700/60 text-[11px] text-brandBlue font-sans">
+                                💡 <strong>Contoh:</strong> Atap rumah, tenda kemah, potongan keju.
+                            </div>
+                        </div>
+
+                        <!-- Prisma Segiempat -->
+                        <div class="bg-slate-800/80 p-5 rounded-2xl border border-brandPurple/30 relative overflow-hidden flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center gap-2 mb-3">
+                                    <span class="w-3 h-3 rounded-full bg-brandPurple"></span>
+                                    <h4 class="text-base font-extrabold text-brandPurple">3. Prisma Segiempat</h4>
+                                </div>
+                                <p class="text-xs text-slate-300 font-sans mb-3">Sering disebut **Balok/Kubus**. Memiliki alas dan tutup berbentuk segiempat.</p>
+                                <ul class="text-xs text-slate-400 font-sans space-y-1 bg-slate-900/80 p-3 rounded-xl border border-slate-700">
+                                    <li>🔹 <strong>Sisi:</strong> 6</li>
+                                    <li>🔹 <strong>Rusuk:</strong> 12</li>
+                                    <li>🔹 <strong>Titik Sudut:</strong> 8</li>
+                                </ul>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-slate-700/60 text-[11px] text-brandBlue font-sans">
+                                💡 <strong>Contoh:</strong> Kotak kado, penghapus, lemari pakaian.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: PROSEDUR -->
+            <div id="tab-prosedur" class="tab-content absolute inset-0 p-4 md:p-6 overflow-y-auto custom-scroll hidden">
+                <div class="max-w-4xl mx-auto space-y-4">
+                    <h3 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-compass-drafting text-brandYellow"></i>
+                        Petunjuk Praktikum Praktis Siswa
+                    </h3>
+
+                    <div class="grid grid-cols-1 gap-3 font-sans">
+                        <div class="flex items-start gap-4 bg-slate-800/70 p-4 rounded-2xl border border-slate-700">
+                            <div class="w-9 h-9 rounded-xl bg-brandYellow text-slate-950 font-extrabold flex items-center justify-center shrink-0 text-base shadow-md">1</div>
+                            <div>
+                                <h4 class="text-sm font-bold text-white mb-0.5">Pilih Bangun Ruang</h4>
+                                <p class="text-xs text-slate-300">Buka menu **Simulasi 3D**, lalu klik tombol pilihan bangun ruang: **Tabung**, **Prisma Segitiga**, atau **Prisma Segiempat**.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-4 bg-slate-800/70 p-4 rounded-2xl border border-slate-700">
+                            <div class="w-9 h-9 rounded-xl bg-brandGreen text-slate-950 font-extrabold flex items-center justify-center shrink-0 text-base shadow-md">2</div>
+                            <div>
+                                <h4 class="text-sm font-bold text-white mb-0.5">Putar & Amati Bentuk 3D</h4>
+                                <p class="text-xs text-slate-300">Geser slider **Rotasi (0° - 360°)** atau drag pada area gambar untuk melihat bangun ruang dari berbagai arah sudut pandang.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-4 bg-slate-800/70 p-4 rounded-2xl border border-slate-700">
+                            <div class="w-9 h-9 rounded-xl bg-brandOrange text-slate-950 font-extrabold flex items-center justify-center shrink-0 text-base shadow-md">3</div>
+                            <div>
+                                <h4 class="text-sm font-bold text-white mb-0.5">Buka Jaring-Jaring (Unfold)</h4>
+                                <p class="text-xs text-slate-300">Geser slider **Buka Jaring-Jaring (0% - 100%)** untuk melihat bagaimana bangun ruang dibuka menjadi bentuk 2D pembentuknya!</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-4 bg-slate-800/70 p-4 rounded-2xl border border-slate-700">
+                            <div class="w-9 h-9 rounded-xl bg-brandPurple text-slate-950 font-extrabold flex items-center justify-center shrink-0 text-base shadow-md">4</div>
+                            <div>
+                                <h4 class="text-sm font-bold text-white mb-0.5">Hitung Sisi, Rusuk, & Titik Sudut</h4>
+                                <p class="text-xs text-slate-300">Amati panel statistik otomatis di sebelah kanan untuk memverifikasi jumlah sisi, rusuk, dan titik sudut.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-4 bg-slate-800/70 p-4 rounded-2xl border border-slate-700">
+                            <div class="w-9 h-9 rounded-xl bg-brandBlue text-slate-950 font-extrabold flex items-center justify-center shrink-0 text-base shadow-md">5</div>
+                            <div>
+                                <h4 class="text-sm font-bold text-white mb-0.5">Isi LKPD & Kuis Latihan</h4>
+                                <p class="text-xs text-slate-300">Pindah ke menu **LKPD**, selesaikan kuis interaktif, catat data hasil eksplorasi, lalu cetak laporan hasil belajarmu!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: SIMULASI (CANVAS CANVAS VISUALIZER) -->
+            <div id="tab-simulasi" class="tab-content absolute inset-0 p-3 md:p-4 flex flex-col md:flex-row gap-3 h-full">
+                
+                <!-- CANVAS VIEW (65%) -->
+                <div class="w-full md:w-[65%] bg-slate-950 rounded-2xl border border-slate-800 flex flex-col relative overflow-hidden">
+                    
+                    <!-- Top Selection Bar -->
+                    <div class="p-3 border-b border-slate-800 flex items-center justify-between gap-2 z-10 flex-wrap">
+                        <div class="flex gap-1.5">
+                            <button onclick="setShape('tabung')" id="btn-tabung" class="shape-btn px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-brandYellow text-slate-950">
+                                <i class="fa-solid fa-prescription-bottle"></i> Tabung
+                            </button>
+                            <button onclick="setShape('prisma-segitiga')" id="btn-prisma-segitiga" class="shape-btn px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-slate-800 text-slate-300 hover:text-white">
+                                <i class="fa-solid fa-play -rotate-90"></i> Prisma Segitiga
+                            </button>
+                            <button onclick="setShape('prisma-segiempat')" id="btn-prisma-segiempat" class="shape-btn px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-slate-800 text-slate-300 hover:text-white">
+                                <i class="fa-solid fa-box font-bold"></i> Balok / Prisma 4
+                            </button>
+                        </div>
+                        <div class="text-[11px] font-mono text-brandBlue font-bold bg-brandBlue/10 px-2.5 py-1 rounded-lg border border-brandBlue/20">
+                            Mode: <span id="mode-text">Tabung 3D</span>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Canvas Container -->
+                    <div class="flex-1 relative flex items-center justify-center bg-slate-950 cursor-grab active:cursor-grabbing">
+                        <canvas id="simCanvas" class="w-full h-full"></canvas>
+                        
+                        <!-- Helper Drag Hint -->
+                        <div class="absolute bottom-3 left-3 bg-slate-900/80 backdrop-blur px-3 py-1.5 rounded-xl border border-slate-800 text-[10px] text-slate-400 font-sans flex items-center gap-1.5 pointer-events-none">
+                            <i class="fa-solid fa-hand-pointer text-brandYellow"></i> Drag untuk memutar 360°
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONTROLS & STATS (35%) -->
+                <div class="w-full md:w-[35%] flex flex-col gap-3 h-full">
+                    
+                    <!-- Slider Panel -->
+                    <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-4 font-sans">
+                        <h4 class="text-xs font-extrabold text-brandYellow uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-sliders"></i> Kontrol Visualisasi
+                        </h4>
+
+                        <!-- Unfold Slider -->
+                        <div>
+                            <div class="flex justify-between items-center text-xs mb-1">
+                                <label for="slider-unfold" class="text-slate-300 font-semibold">Buka Jaring-Jaring:</label>
+                                <span id="val-unfold" class="font-mono text-brandGreen font-bold bg-brandGreen/10 px-2 py-0.5 rounded border border-brandGreen/20">0%</span>
+                            </div>
+                            <input type="range" id="slider-unfold" min="0" max="100" value="0" oninput="onControlChange()" class="w-full accent-brandGreen bg-slate-800 h-2 rounded-lg cursor-pointer">
+                            <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-0.5">
+                                <span>Tutup (3D)</span>
+                                <span>Buka (Jaring)</span>
+                            </div>
+                        </div>
+
+                        <!-- Rotation Slider -->
+                        <div>
+                            <div class="flex justify-between items-center text-xs mb-1">
+                                <label for="slider-rot" class="text-slate-300 font-semibold">Rotasi Sudut (360°):</label>
+                                <span id="val-rot" class="font-mono text-brandBlue font-bold bg-brandBlue/10 px-2 py-0.5 rounded border border-brandBlue/20">45°</span>
+                            </div>
+                            <input type="range" id="slider-rot" min="0" max="360" value="45" oninput="onControlChange()" class="w-full accent-brandBlue bg-slate-800 h-2 rounded-lg cursor-pointer">
+                        </div>
+                    </div>
+
+                    <!-- Elements Info Stat Card -->
+                    <div class="flex-1 bg-slate-950 p-4 rounded-2xl border border-slate-800 flex flex-col justify-between font-sans">
+                        <div>
+                            <h4 class="text-xs font-extrabold text-white uppercase tracking-wider mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-chart-pie text-brandPurple"></i> Unsur Bangun Ruang
+                            </h4>
+
+                            <div class="grid grid-cols-3 gap-2 text-center mb-4">
+                                <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800">
+                                    <span class="text-[10px] text-slate-400 block font-bold">JUMLAH SISI</span>
+                                    <span id="stat-sisi" class="text-xl font-extrabold text-brandYellow font-fredoka">3</span>
+                                </div>
+                                <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800">
+                                    <span class="text-[10px] text-slate-400 block font-bold">RUSUK</span>
+                                    <span id="stat-rusuk" class="text-xl font-extrabold text-brandGreen font-fredoka">2</span>
+                                </div>
+                                <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800">
+                                    <span class="text-[10px] text-slate-400 block font-bold">TITIK SUDUT</span>
+                                    <span id="stat-sudut" class="text-xl font-extrabold text-brandBlue font-fredoka">0</span>
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <div id="stat-desc" class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 text-xs text-slate-300 leading-relaxed">
+                                Tabung memiliki 2 sisi berbentuk lingkaran (alas & tutup) serta 1 sisi lengkung (selimut).
+                            </div>
+                        </div>
+
+                        <!-- Real-life object example -->
+                        <div class="mt-3 p-2.5 bg-brandYellow/10 rounded-xl border border-brandYellow/20 flex items-center gap-2 text-xs text-brandYellow">
+                            <i class="fa-solid fa-cookie-bite text-base"></i>
+                            <div>
+                                <span class="font-bold block text-[10px] uppercase">Contoh Benda Nyata:</span>
+                                <span id="stat-contoh" class="text-slate-200">Kaleng Susu, Kaleng Roti, Drum Air</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- TAB 4: LKPD (LEMBAR KERJA PESERTA DIDIK) -->
+            <div id="tab-lkpd" class="tab-content absolute inset-0 p-4 md:p-6 overflow-y-auto custom-scroll hidden font-sans">
+                <div class="max-w-4xl mx-auto space-y-6">
+                    
+                    <!-- Print Header (PDF Only) -->
+                    <div class="hidden print-only text-center mb-6 border-b-2 border-black pb-4">
+                        <h1 class="text-2xl font-bold text-black uppercase">LEMBAR KERJA PESERTA DIDIK (LKPD)</h1>
+                        <h2 class="text-lg text-gray-700">MATEMATIKA FASE B (KELAS 4 SD) - BANGUN RUANG</h2>
+                        <p class="text-sm text-gray-500">SD Negeri 3 Getakan • Pengembang: I Komang Agus Sethiawan</p>
+                    </div>
+
+                    <!-- Identitas Siswa -->
+                    <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div>
+                            <label class="text-xs text-slate-400 font-bold block mb-1">Nama Siswa / Kelompok:</label>
+                            <input type="text" id="lkpd-nama" placeholder="Tuliskan namamu di sini..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brandYellow">
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-400 font-bold block mb-1">Kelas / No. Absen:</label>
+                            <input type="text" id="lkpd-kelas" value="Kelas IV / SD N 3 Getakan" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brandYellow">
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-400 font-bold block mb-1">Tanggal Praktikum:</label>
+                            <input type="date" id="lkpd-tanggal" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brandYellow">
+                        </div>
+                    </div>
+
+                    <!-- KUIS INTERAKTIF MANDIRI -->
+                    <div class="bg-slate-800/80 p-5 rounded-2xl border border-slate-700 space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-700 pb-3">
+                            <h4 class="text-sm font-extrabold text-brandYellow flex items-center gap-2">
+                                <i class="fa-solid fa-gamepad"></i>
+                                Kuis Latihan Mandiri (Kelas 4 SD)
+                            </h4>
+                            <span id="quiz-score" class="text-xs font-bold text-brandGreen font-mono bg-brandGreen/10 px-2.5 py-1 rounded-lg border border-brandGreen/20">Skor: 0 / 3</span>
+                        </div>
+
+                        <!-- Q1 -->
+                        <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800 space-y-2">
+                            <p class="text-xs text-slate-200 font-bold">1. Bangun ruang yang memiliki alas & tutup berbentuk lingkaran serta TIDAK memiliki titik sudut adalah...</p>
+                            <div class="grid grid-cols-3 gap-2 text-xs">
+                                <button onclick="checkQuiz(1, 'A')" id="q1-a" class="q1-btn p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-300 transition">A. Prisma Segitiga</button>
+                                <button onclick="checkQuiz(1, 'B')" id="q1-b" class="q1-btn p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-300 transition">B. Tabung</button>
+                                <button onclick="checkQuiz(1, 'C')" id="q1-c" class="q1-btn p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-300 transition">C. Balok</button>
+                            </div>
+                        </div>
+
+                        <!-- Q2 -->
+                        <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800 space-y-2">
+                            <p class="text-xs text-slate-200 font-bold">2. Tenda tempat berkemah di lapangan sekolah biasanya menyerupai bentuk bangun ruang...</p>
+                            <div class="grid grid-cols-3 gap-2 text-xs">
+                                <button onclick="checkQuiz(2, 'A')" id="q2-a" class="q2-btn p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-300 transition">A. Prisma Segitiga</button>
+                                <button onclick="checkQuiz(2, 'B')" id="q2-b" class="q2-btn p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-300 transition">B. Tabung</button>
+                                <button onclick="checkQuiz(2, 'C')" id="q2-c" class="q2-btn p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-300 transition">C. Bola</button>
+                            </div>
+                        </div>
+
+                        <!-- Q3 -->
+                        <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800 space-y-2">
+                            <p class="text-xs text-slate-200 font-bold">3. Berapakah jumlah rusuk yang dimiliki oleh Prisma Segitiga?</p>
+                            <div class="grid grid-cols-3 gap-2 text-xs">
+                                <button onclick="checkQuiz(3, 'A')" id="q3-a" class="q3-btn p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-300 transition">A. 5 Rusuk</button>
+                                <button onclick="checkQuiz(3, 'B')" id="q3-b" class="q3-btn p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-300 transition">B. 9 Rusuk</button>
+                                <button onclick="checkQuiz(3, 'C')" id="q3-c" class="q3-btn p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-300 transition">C. 12 Rusuk</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabel Hasil Pengamatan Praktikum -->
+                    <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
+                        <h4 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-table text-brandGreen"></i>
+                            Tabel Catatan Pengamatan Siswa
+                        </h4>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs text-slate-300 border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-900 text-slate-400 border-b border-slate-700">
+                                        <th class="p-2.5">Nama Bangun Ruang</th>
+                                        <th class="p-2.5 text-center">Bentuk Alas</th>
+                                        <th class="p-2.5 text-center">Jumlah Sisi</th>
+                                        <th class="p-2.5 text-center">Jumlah Rusuk</th>
+                                        <th class="p-2.5 text-center">Titik Sudut</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-700/60 font-mono">
+                                    <tr>
+                                        <td class="p-2.5 font-bold text-brandYellow">1. Tabung</td>
+                                        <td class="p-2.5 text-center">Lingkaran</td>
+                                        <td class="p-2.5 text-center">3</td>
+                                        <td class="p-2.5 text-center">2</td>
+                                        <td class="p-2.5 text-center">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2.5 font-bold text-brandGreen">2. Prisma Segitiga</td>
+                                        <td class="p-2.5 text-center">Segitiga</td>
+                                        <td class="p-2.5 text-center">5</td>
+                                        <td class="p-2.5 text-center">9</td>
+                                        <td class="p-2.5 text-center">6</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2.5 font-bold text-brandPurple">3. Prisma Segiempat (Balok)</td>
+                                        <td class="p-2.5 text-center">Segiempat</td>
+                                        <td class="p-2.5 text-center">6</td>
+                                        <td class="p-2.5 text-center">12</td>
+                                        <td class="p-2.5 text-center">8</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Cetak / Export PDF -->
+                    <div class="flex justify-end gap-3 no-print pb-6">
+                        <button onclick="window.print()" class="px-6 py-3 bg-gradient-to-r from-brandGreen to-emerald-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-extrabold rounded-2xl shadow-lg transition flex items-center gap-2 text-xs">
+                            <i class="fa-solid fa-print"></i>
+                            <span>Cetak Laporan / Simpan PDF</span>
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- TAB 5: PENGEMBANG -->
+            <div id="tab-pengembang" class="tab-content absolute inset-0 p-4 md:p-6 overflow-y-auto custom-scroll hidden font-sans">
+                <div class="max-w-2xl mx-auto space-y-6 text-center">
+                    
+                    <div class="bg-slate-800/80 p-6 rounded-3xl border border-slate-700 flex flex-col items-center relative overflow-hidden">
+                        <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-brandYellow via-brandOrange to-brandPurple p-1 mb-4 shadow-xl">
+                            <div class="w-full h-full rounded-full bg-slate-900 flex items-center justify-center text-brandYellow text-3xl font-extrabold">
+                                IK
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-extrabold text-white mb-1">I KOMANG AGUS SETHIAWAN</h3>
+                        <p class="text-xs text-brandYellow font-bold mb-4">Guru & Pengembang Lab Maya Interaktif</p>
+                        
+                        <div class="w-full h-px bg-slate-700/80 my-2"></div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full text-left text-xs">
+                            <div class="bg-slate-900 p-3 rounded-2xl border border-slate-800">
+                                <span class="text-slate-400 block text-[10px] font-bold uppercase">UNIT KERJA / SEKOLAH:</span>
+                                <span class="text-white font-bold">SD Negeri 3 Getakan</span>
+                            </div>
+                            <div class="bg-slate-900 p-3 rounded-2xl border border-slate-800">
+                                <span class="text-slate-400 block text-[10px] font-bold uppercase">TARGET FASE & KELAS:</span>
+                                <span class="text-white font-bold">Fase B (Kelas 4 SD)</span>
+                            </div>
+                            <div class="bg-slate-900 p-3 rounded-2xl border border-slate-800">
+                                <span class="text-slate-400 block text-[10px] font-bold uppercase">TOPIK MATEMATIKA:</span>
+                                <span class="text-white font-bold">Bangun Ruang (Tabung & Prisma)</span>
+                            </div>
+                            <div class="bg-slate-900 p-3 rounded-2xl border border-slate-800">
+                                <span class="text-slate-400 block text-[10px] font-bold uppercase">STATUS OPERASIONAL:</span>
+                                <span class="text-brandGreen font-bold flex items-center gap-1">
+                                    <i class="fa-solid fa-circle-check"></i> 100% Offline Standalone
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-brandYellow/10 border border-brandYellow/20 p-4 rounded-2xl text-xs text-brandYellow font-sans leading-relaxed">
+                        <i class="fa-solid fa-heart mr-1"></i>
+                        Dikembangkan khusus untuk mendukung pembelajaran interaktif murid SD Negeri 3 Getakan agar lebih mudah memahami matematika secara visual dan menyenangkan!
+                    </div>
+
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- AUDIO SYNTHESIZER (WEB AUDIO API STANDALONE) -->
+    <script>
+        let audioCtx = null;
+        let isMuted = false;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSound(type) {
+            if (isMuted) return;
+            initAudio();
+            if (!audioCtx) return;
+
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(500, now);
+                    osc.frequency.exponentialRampToValueAtTime(300, now + 0.05);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.05);
+                    osc.start(now);
+                    osc.stop(now + 0.05);
+                } else if (type === 'unfold') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(250, now);
+                    osc.frequency.exponentialRampToValueAtTime(600, now + 0.1);
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.1);
+                    osc.start(now);
+                    osc.stop(now + 0.1);
+                } else if (type === 'correct') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, now); // C5
+                    osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+                    osc.start(now);
+                    osc.stop(now + 0.2);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(200, now);
+                    osc.frequency.setValueAtTime(140, now + 0.1);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+                    osc.start(now);
+                    osc.stop(now + 0.2);
+                } else if (type === 'reset') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(450, now);
+                    osc.frequency.exponentialRampToValueAtTime(150, now + 0.15);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
+                    osc.start(now);
+                    osc.stop(now + 0.15);
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        }
+
+        function toggleAudio() {
+            isMuted = !isMuted;
+            const icon = document.getElementById('audio-icon');
+            if (isMuted) {
+                icon.className = 'fa-solid fa-volume-xmark text-rose-400';
+            } else {
+                icon.className = 'fa-solid fa-volume-high text-brandYellow';
+                playSound('click');
+            }
+        }
+    </script>
+
+    <!-- CORE VISUALIZER & SIMULATION JS LOGIC -->
+    <script>
+        let currentShape = 'tabung';
+        let unfoldPercent = 0;
+        let rotAngle = 45;
+        let isDragging = false;
+        let lastMouseX = 0;
+
+        // Quiz score tracking
+        let scoreCount = 0;
+        const quizAnswers = { 1: false, 2: false, 3: false };
+
+        window.onload = function() {
+            document.getElementById('lkpd-tanggal').valueAsDate = new Date();
+
+            // Loading bar animation
+            let progress = 0;
+            const loadingBar = document.getElementById('loading-bar');
+            const loadingText = document.getElementById('loading-text');
+            const btnStart = document.getElementById('btn-start');
+
+            const interval = setInterval(() => {
+                progress += Math.floor(Math.random() * 25) + 15;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    loadingText.innerText = 'Lab Maya Siap!';
+                    btnStart.disabled = false;
+                    btnStart.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+                loadingBar.style.width = progress + '%';
+                if(progress < 100) loadingText.innerText = `Menyiapkan Ruang Belajar (${progress}%)...`;
+            }, 100);
+
+            // Canvas drag interaction
+            const canvas = document.getElementById('simCanvas');
+            canvas.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                lastMouseX = e.clientX;
+            });
+            window.addEventListener('mouseup', () => isDragging = false);
+            window.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    const deltaX = e.clientX - lastMouseX;
+                    rotAngle = (rotAngle + deltaX * 0.5) % 360;
+                    if (rotAngle < 0) rotAngle += 360;
+                    document.getElementById('slider-rot').value = Math.round(rotAngle);
+                    document.getElementById('val-rot').innerText = Math.round(rotAngle) + '°';
+                    lastMouseX = e.clientX;
+                    renderCanvas();
+                }
+            });
+
+            // Touch support for mobile phones
+            canvas.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                lastMouseX = e.touches[0].clientX;
+            });
+            window.addEventListener('touchend', () => isDragging = false);
+            window.addEventListener('touchmove', (e) => {
+                if (isDragging) {
+                    const deltaX = e.touches[0].clientX - lastMouseX;
+                    rotAngle = (rotAngle + deltaX * 0.5) % 360;
+                    if (rotAngle < 0) rotAngle += 360;
+                    document.getElementById('slider-rot').value = Math.round(rotAngle);
+                    document.getElementById('val-rot').innerText = Math.round(rotAngle) + '°';
+                    lastMouseX = e.touches[0].clientX;
+                    renderCanvas();
+                }
+            });
+
+            window.addEventListener('resize', renderCanvas);
+        };
+
+        function startApp() {
+            playSound('click');
+            document.getElementById('splash-screen').classList.add('hidden');
+            switchTab('simulasi');
+        }
+
+        function switchTab(tabName) {
+            playSound('click');
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.add('hidden'));
+
+            const btns = document.querySelectorAll('.tab-btn');
+            btns.forEach(btn => {
+                btn.classList.remove('bg-brandYellow', 'text-slate-950');
+                btn.classList.add('text-slate-400');
+            });
+
+            const targetTab = document.getElementById('tab-' + tabName);
+            if(targetTab) targetTab.classList.remove('hidden');
+
+            const targetBtn = document.getElementById('tab-btn-' + tabName);
+            if(targetBtn) {
+                targetBtn.classList.add('bg-brandYellow', 'text-slate-950');
+                targetBtn.classList.remove('text-slate-400');
+            }
+
+            if(tabName === 'simulasi') {
+                setTimeout(renderCanvas, 50);
+            }
+        }
+
+        function setShape(shape) {
+            playSound('click');
+            currentShape = shape;
+
+            // Reset buttons style
+            const btns = document.querySelectorAll('.shape-btn');
+            btns.forEach(btn => {
+                btn.classList.remove('bg-brandYellow', 'bg-brandGreen', 'bg-brandPurple', 'text-slate-950');
+                btn.classList.add('bg-slate-800', 'text-slate-300');
+            });
+
+            const activeBtn = document.getElementById('btn-' + shape);
+            const modeText = document.getElementById('mode-text');
+            const statSisi = document.getElementById('stat-sisi');
+            const statRusuk = document.getElementById('stat-rusuk');
+            const statSudut = document.getElementById('stat-sudut');
+            const statDesc = document.getElementById('stat-desc');
+            const statContoh = document.getElementById('stat-contoh');
+
+            if (shape === 'tabung') {
+                activeBtn.className = 'shape-btn px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-brandYellow text-slate-950';
+                modeText.innerText = 'Tabung 3D';
+                statSisi.innerText = '3';
+                statRusuk.innerText = '2';
+                statSudut.innerText = '0';
+                statDesc.innerText = 'Tabung terdiri dari 2 lingkaran sama besar (alas & tutup) dan 1 selimut lengkung.';
+                statContoh.innerText = 'Kaleng Susu, Kaleng Roti, Drum Air, Pipa PVC';
+            } else if (shape === 'prisma-segitiga') {
+                activeBtn.className = 'shape-btn px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-brandGreen text-slate-950';
+                modeText.innerText = 'Prisma Segitiga 3D';
+                statSisi.innerText = '5';
+                statRusuk.innerText = '9';
+                statSudut.innerText = '6';
+                statDesc.innerText = 'Prisma Segitiga memiliki alas & tutup berbentuk segitiga serta 3 sisi tegak segiempat.';
+                statContoh.innerText = 'Tenda Kemah, Atap Rumah, Potongan Keju';
+            } else if (shape === 'prisma-segiempat') {
+                activeBtn.className = 'shape-btn px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-brandPurple text-slate-950';
+                modeText.innerText = 'Prisma Segiempat (Balok) 3D';
+                statSisi.innerText = '6';
+                statRusuk.innerText = '12';
+                statSudut.innerText = '8';
+                statDesc.innerText = 'Prisma Segiempat memilki 6 sisi berbentuk segiempat (seperti kotak/balok).';
+                statContoh.innerText = 'Kotak Kado, Kotak Pensil, Penghapus, Lemari';
+            }
+
+            renderCanvas();
+        }
+
+        function onControlChange() {
+            unfoldPercent = parseInt(document.getElementById('slider-unfold').value);
+            rotAngle = parseInt(document.getElementById('slider-rot').value);
+
+            document.getElementById('val-unfold').innerText = unfoldPercent + '%';
+            document.getElementById('val-rot').innerText = rotAngle + '°';
+
+            playSound('unfold');
+            renderCanvas();
+        }
+
+        // HTML5 CANVAS RENDERING ROUTINE
+        function renderCanvas() {
+            const canvas = document.getElementById('simCanvas');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+
+            const w = canvas.width;
+            const h = canvas.height;
+
+            ctx.clearRect(0, 0, w, h);
+
+            const rad = rotAngle * (Math.PI / 180);
+            const unfoldFactor = unfoldPercent / 100;
+
+            const centerX = w / 2;
+            const centerY = h / 2;
+
+            ctx.save();
+            ctx.translate(centerX, centerY);
+
+            if (currentShape === 'tabung') {
+                drawTabung(ctx, rad, unfoldFactor);
+            } else if (currentShape === 'prisma-segitiga') {
+                drawPrismaSegitiga(ctx, rad, unfoldFactor);
+            } else if (currentShape === 'prisma-segiempat') {
+                drawPrismaSegiempat(ctx, rad, unfoldFactor);
+            }
+
+            ctx.restore();
+        }
+
+        // DRAW TABUNG
+        function drawTabung(ctx, rad, unfold) {
+            const r = 55;
+            const h = 130;
+
+            if (unfold < 0.1) {
+                // 3D Closed View
+                const offset = Math.sin(rad) * 20;
+
+                // Selimut (Body)
+                ctx.fillStyle = 'rgba(250, 204, 21, 0.4)';
+                ctx.strokeStyle = '#FACC15';
+                ctx.lineWidth = 3;
+
+                ctx.beginPath();
+                ctx.ellipse(0, -h/2, r, r*0.35, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.ellipse(0, h/2, r, r*0.35, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.rect(-r, -h/2, r*2, h);
+                ctx.fillStyle = 'rgba(250, 204, 21, 0.25)';
+                ctx.fill();
+                ctx.stroke();
+
+                // Top & Bottom Circles highlight
+                ctx.beginPath();
+                ctx.ellipse(0, -h/2, r, r*0.35, 0, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(250, 204, 21, 0.7)';
+                ctx.fill();
+                ctx.stroke();
+            } else {
+                // Unfolded 2D Net
+                const netW = (2 * Math.PI * r) * (1 - unfold * 0.3);
+                const netH = h;
+
+                // Selimut Persegi Panjang
+                ctx.fillStyle = 'rgba(250, 204, 21, 0.3)';
+                ctx.strokeStyle = '#FACC15';
+                ctx.lineWidth = 3;
+                ctx.fillRect(-netW/2, -netH/2, netW, netH);
+                ctx.strokeRect(-netW/2, -netH/2, netW, netH);
+
+                // Lingkaran Atas & Bawah
+                const distY = (netH/2 + r) * unfold;
+
+                ctx.fillStyle = 'rgba(250, 204, 21, 0.6)';
+                // Top Circle
+                ctx.beginPath();
+                ctx.arc(0, -netH/2 - distY + (r * (1 - unfold)), r, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                // Bottom Circle
+                ctx.beginPath();
+                ctx.arc(0, netH/2 + distY - (r * (1 - unfold)), r, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+            }
+        }
+
+        // DRAW PRISMA SEGITIGA
+        function drawPrismaSegitiga(ctx, rad, unfold) {
+            const s = 70;
+            const h = 120;
+
+            if (unfold < 0.1) {
+                // 3D Mode
+                const cos = Math.cos(rad) * s;
+                const sin = Math.sin(rad) * (s * 0.4);
+
+                ctx.strokeStyle = '#4ADE80';
+                ctx.fillStyle = 'rgba(74, 222, 128, 0.35)';
+                ctx.lineWidth = 3;
+
+                // Triangular Top & Bottom
+                const p1 = { x: 0, y: -h/2 - sin };
+                const p2 = { x: -cos, y: -h/2 + sin/2 };
+                const p3 = { x: cos, y: -h/2 + sin/2 };
+
+                const b1 = { x: 0, y: h/2 - sin };
+                const b2 = { x: -cos, y: h/2 + sin/2 };
+                const b3 = { x: cos, y: h/2 + sin/2 };
+
+                // Draw Faces
+                ctx.beginPath();
+                ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.lineTo(p3.x, p3.y); ctx.closePath();
+                ctx.fill(); ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(b1.x, b1.y); ctx.lineTo(b2.x, b2.y); ctx.lineTo(b3.x, b3.y); ctx.closePath();
+                ctx.fill(); ctx.stroke();
+
+                // Connecting Edges
+                ctx.beginPath();
+                ctx.moveTo(p1.x, p1.y); ctx.lineTo(b1.x, b1.y);
+                ctx.moveTo(p2.x, p2.y); ctx.lineTo(b2.x, b2.y);
+                ctx.moveTo(p3.x, p3.y); ctx.lineTo(b3.x, b3.y);
+                ctx.stroke();
+            } else {
+                // Net Mode
+                const sideW = 65;
+                const unfoldDist = 50 * unfold;
+
+                ctx.strokeStyle = '#4ADE80';
+                ctx.fillStyle = 'rgba(74, 222, 128, 0.35)';
+                ctx.lineWidth = 3;
+
+                // 3 Rectangles
+                ctx.fillRect(-sideW * 1.5, -h/2, sideW, h); ctx.strokeRect(-sideW * 1.5, -h/2, sideW, h);
+                ctx.fillRect(-sideW/2, -h/2, sideW, h); ctx.strokeRect(-sideW/2, -h/2, sideW, h);
+                ctx.fillRect(sideW/2, -h/2, sideW, h); ctx.strokeRect(sideW/2, -h/2, sideW, h);
+
+                // Triangles Top & Bottom
+                ctx.fillStyle = 'rgba(74, 222, 128, 0.6)';
+
+                // Top Triangle
+                ctx.beginPath();
+                ctx.moveTo(-sideW/2, -h/2);
+                ctx.lineTo(sideW/2, -h/2);
+                ctx.lineTo(0, -h/2 - unfoldDist - 45);
+                ctx.closePath();
+                ctx.fill(); ctx.stroke();
+
+                // Bottom Triangle
+                ctx.beginPath();
+                ctx.moveTo(-sideW/2, h/2);
+                ctx.lineTo(sideW/2, h/2);
+                ctx.lineTo(0, h/2 + unfoldDist + 45);
+                ctx.closePath();
+                ctx.fill(); ctx.stroke();
+            }
+        }
+
+        // DRAW PRISMA SEGIEMPAT (BALOK)
+        function drawPrismaSegiempat(ctx, rad, unfold) {
+            const bw = 90;
+            const bh = 110;
+            const bd = 60;
+
+            if (unfold < 0.1) {
+                const cos = Math.cos(rad) * (bd * 0.6);
+                const sin = Math.sin(rad) * (bd * 0.4);
+
+                ctx.strokeStyle = '#C084FC';
+                ctx.fillStyle = 'rgba(192, 132, 252, 0.35)';
+                ctx.lineWidth = 3;
+
+                // Front Face
+                ctx.fillRect(-bw/2, -bh/2, bw, bh);
+                ctx.strokeRect(-bw/2, -bh/2, bw, bh);
+
+                // Top & Side Perspective
+                ctx.beginPath();
+                ctx.moveTo(-bw/2, -bh/2); ctx.lineTo(-bw/2 + cos, -bh/2 - sin);
+                ctx.lineTo(bw/2 + cos, -bh/2 - sin); ctx.lineTo(bw/2, -bh/2);
+                ctx.closePath(); ctx.fill(); ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(bw/2, -bh/2); ctx.lineTo(bw/2 + cos, -bh/2 - sin);
+                ctx.lineTo(bw/2 + cos, bh/2 - sin); ctx.lineTo(bw/2, bh/2);
+                ctx.closePath(); ctx.fill(); ctx.stroke();
+            } else {
+                // Net Mode
+                const wBox = 55;
+                const hBox = 80;
+                const shift = unfold * 30;
+
+                ctx.strokeStyle = '#C084FC';
+                ctx.fillStyle = 'rgba(192, 132, 252, 0.35)';
+                ctx.lineWidth = 3;
+
+                // Cross shape net
+                ctx.fillRect(-wBox/2, -hBox/2, wBox, hBox); ctx.strokeRect(-wBox/2, -hBox/2, wBox, hBox);
+                
+                // Left & Right
+                ctx.fillRect(-wBox*1.5 - shift, -hBox/2, wBox, hBox); ctx.strokeRect(-wBox*1.5 - shift, -hBox/2, wBox, hBox);
+                ctx.fillRect(wBox/2 + shift, -hBox/2, wBox, hBox); ctx.strokeRect(wBox/2 + shift, -hBox/2, wBox, hBox);
+                ctx.fillRect(wBox*1.5 + shift*2, -hBox/2, wBox, hBox); ctx.strokeRect(wBox*1.5 + shift*2, -hBox/2, wBox, hBox);
+
+                // Top & Bottom
+                ctx.fillStyle = 'rgba(192, 132, 252, 0.6)';
+                ctx.fillRect(-wBox/2, -hBox*1.5 - shift, wBox, hBox); ctx.strokeRect(-wBox/2, -hBox*1.5 - shift, wBox, hBox);
+                ctx.fillRect(-wBox/2, hBox/2 + shift, wBox, hBox); ctx.strokeRect(-wBox/2, hBox/2 + shift, wBox, hBox);
+            }
+        }
+
+        // Quiz Logic
+        function checkQuiz(qNum, choice) {
+            const correctAnswers = { 1: 'B', 2: 'A', 3: 'B' };
+            const isCorrect = (choice === correctAnswers[qNum]);
+
+            if (isCorrect) {
+                playSound('correct');
+                quizAnswers[qNum] = true;
+            } else {
+                playSound('wrong');
+                quizAnswers[qNum] = false;
+            }
+
+            // Update Buttons Styling
+            ['A', 'B', 'C'].forEach(opt => {
+                const btn = document.getElementById(`q${qNum}-${opt.toLowerCase()}`);
+                btn.className = 'q' + qNum + '-btn p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-300 transition';
+                if (opt === choice) {
+                    if (isCorrect) {
+                        btn.className = 'q' + qNum + '-btn p-2 bg-brandGreen text-slate-950 font-bold rounded-lg transition';
+                    } else {
+                        btn.className = 'q' + qNum + '-btn p-2 bg-rose-500 text-white font-bold rounded-lg transition';
+                    }
+                }
+            });
+
+            // Calculate Score
+            scoreCount = Object.values(quizAnswers).filter(Boolean).length;
+            document.getElementById('quiz-score').innerText = `Skor: ${scoreCount} / 3`;
+        }
+
+        function resetAll() {
+            playSound('reset');
+            unfoldPercent = 0;
+            rotAngle = 45;
+            document.getElementById('slider-unfold').value = 0;
+            document.getElementById('slider-rot').value = 45;
+            document.getElementById('val-unfold').innerText = '0%';
+            document.getElementById('val-rot').innerText = '45°';
+            setShape('tabung');
+        }
+    </script>
+</body>
+</html>
